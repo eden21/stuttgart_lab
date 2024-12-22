@@ -9,12 +9,20 @@ f2=1e5;
 v_n=v_out(1)
 y=(v_out-v_n)./(f2-f1);
 func=@(a,R) a(1).*R+a(2)
-x0=[1.2e-21,1.87e-18];
+x0=[1.89e-20,9.1146e-20];
 fit=fminsearch(@(a) norm(func(a,R)-v_out),x0)
-y_fit=func(fit,R);
+x=linspace(1,1e5,1000);
+y_fit=func(fit,x);
+fig=figure;
 loglog(R,y,'O')
 hold on
-plot(R,y_fit)
+plot(x,y_fit)
 xlim([1e-1,1e5])
-ylim([1e-18,1e-15])
+ylim([-1,1e-15])
+grid()
+xlabel('Resistance R [\Omega]')
+ylabel('Squared Average Voltage per Hertz U^2 in [V^2/Hz]')
+legend('Data','fit',Location='northwest')
+savefig('C:\Users\X1\Documents\MATLAB\lab\noise\voltage_vs_R.fig')
+saveas(fig,'C:\Users\X1\Documents\MATLAB\lab\noise\voltage_vs_R.eps')
 %v_error=
