@@ -9,7 +9,7 @@ from scipy.fft import fft, ifft, fftfreq
 def exp_model(t,A,T2,B):
     return A*np.exp(-t/T2)+B
 
-path='C:\\Users\\X1\\Documents\\MATLAB\\lab\\NMR\\water_glycerine\\100_glycerine\\MG\\20250422-0003.txt'
+path='C:\\Users\\X1\\Documents\\MATLAB\\lab\\NMR\\distilled_water\\MG\\20250422-0003.txt'
 data=pd.read_csv(path, delimiter='\t')
 data.replace('∞', np.inf, inplace=True)
 data.replace('-∞', -np.inf, inplace=True)
@@ -34,21 +34,23 @@ Y_filtered[np.abs(freq) > threshold] = 0
 y_filtered = np.real(ifft(Y_filtered))
 
 
-peaks, properties = signal.find_peaks(y_filtered, height=1,width=1600)
+peaks, properties = signal.find_peaks(y_filtered, height=1,width=500)
 p0=np.array([1,2,3])
 popt, pcov = sc.curve_fit(exp_model, Time[peaks], y_filtered[peaks],p0=p0,maxfev=5000)
 print(popt)
 t=np.linspace(Time[peaks[0]],Time[peaks[-1]],100)
 y_fit=exp_model(t,popt[0],popt[1],popt[2])
 
+saved_popt=pd.Series(popt)
+saved_popt.to_csv(path+"_fit_popt.csv")
 
-fig,ax=plt.subplots(1,1,figsize=(12,6))
+fig,ax=plt.subplots(1,1)
 ax.plot(Time,y_filtered,label='FFT filtered data')
 ax.plot(Time[peaks],y_filtered[peaks],'o',label='peaks')
 ax.plot(t,y_fit,label='fit')
 
 ax.grid()
-ax.legend()
+#ax.legend()
 ax.set_xlabel('Time[msec]')
 ax.set_ylabel('Voltage[V]')
 
